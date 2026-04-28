@@ -70,7 +70,7 @@ export default function TopUpPage() {
 
       <Grid container spacing={3}>
         {/* Balance & Request */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* Balance tile */}
             <Paper sx={{ p: 3 }}>
@@ -104,7 +104,7 @@ export default function TopUpPage() {
                     type="number"
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    inputProps={{ min: 100, step: 100 }}
+                    slotProps={{ htmlInput: { min: 100, step: 100 } }}
                     required
                   />
                   {unitPreview > 0 && (
@@ -125,7 +125,7 @@ export default function TopUpPage() {
         </Grid>
 
         {/* History table */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper>
             <Box sx={{ px: 3, py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="h3" sx={{ fontSize: '0.9375rem' }}>Top-Up History</Typography>

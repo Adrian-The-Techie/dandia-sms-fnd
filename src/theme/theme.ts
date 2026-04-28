@@ -54,6 +54,14 @@ const theme = createTheme({
   ] as any,
   components: {
     MuiButton: {
+      variants: [
+        {
+          props: { variant: 'contained', color: 'primary' },
+          style: {
+            '&:hover': { backgroundColor: '#0852A3' },
+          },
+        },
+      ],
       styleOverrides: {
         root: {
           borderRadius: 6,
@@ -61,9 +69,6 @@ const theme = createTheme({
           fontSize: '0.875rem',
           boxShadow: 'none',
           '&:hover': { boxShadow: 'none' },
-        },
-        containedPrimary: {
-          '&:hover': { backgroundColor: '#0852A3' },
         },
         outlined: {
           borderColor: '#E2E8F0',

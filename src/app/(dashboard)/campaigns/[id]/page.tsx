@@ -67,25 +67,25 @@ export default function CampaignDetailPage() {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper sx={{ p: 4 }}>
             <Typography variant="h3" sx={{ fontSize: '1.0625rem', mb: 3 }}>Message details</Typography>
             <Grid container spacing={4}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Status</Typography>
                 <StatusBadge status={campaign.status} />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Scheduled At</Typography>
                 <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Clock size={14} color="#64748B" />
                   {campaign.scheduled_at ? new Date(campaign.scheduled_at).toLocaleString() : 'Immediate'}
                 </Typography>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Divider />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="subtitle2" sx={{ mb: 1 }}>Message Content</Typography>
                 <Box sx={{ bgcolor: '#F8FAFC', p: 2, borderRadius: 2, border: '1px solid #E2E8F0' }}>
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: 'text.primary' }}>
@@ -100,7 +100,7 @@ export default function CampaignDetailPage() {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 4, height: '100%' }}>
             <Typography variant="h3" sx={{ fontSize: '1.0625rem', mb: 3 }}>Audience & Delivery</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>

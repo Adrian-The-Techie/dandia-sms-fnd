@@ -130,7 +130,7 @@ export default function CampaignsPage() {
           </TextField>
           <TextField label="Message" multiline rows={4} value={form.message_body} onChange={e => setForm(p => ({ ...p, message_body: e.target.value }))} required />
           <TextField label="Recipients (one per line)" multiline rows={4} placeholder="+254712345678&#10;+254798765432" value={form.recipients} onChange={e => setForm(p => ({ ...p, recipients: e.target.value }))} required />
-          <TextField label="Schedule (optional)" type="datetime-local" value={form.scheduled_at} onChange={e => setForm(p => ({ ...p, scheduled_at: e.target.value }))} InputLabelProps={{ shrink: true }} />
+          <TextField label="Schedule (optional)" type="datetime-local" value={form.scheduled_at} onChange={e => setForm(p => ({ ...p, scheduled_at: e.target.value }))} slotProps={{ inputLabel: { shrink: true } }} />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
           <Button variant="outlined" size="small" onClick={() => setOpen(false)}>Cancel</Button>

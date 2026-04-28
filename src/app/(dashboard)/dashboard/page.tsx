@@ -53,7 +53,7 @@ export default function DashboardPage() {
       {/* KPI Row */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {kpis.map((k) => (
-          <Grid item xs={12} sm={6} md={4} key={k.label}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={k.label}>
             {loading ? (
               <Skeleton variant="rectangular" height={112} sx={{ borderRadius: 1 }} />
             ) : (
@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
       {/* Chart + Quick actions */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h3" sx={{ fontSize: '0.9375rem' }}>Message Volume</Typography>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
             </Box>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h3" sx={{ fontSize: '0.9375rem', mb: 2.5 }}>Quick Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, flexGrow: 1 }}>

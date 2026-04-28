@@ -70,7 +70,7 @@ export default function SettingsPage() {
       <PageHeader title="Settings" subtitle="Manage your account profile and security preferences." />
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={7}>
+        <Grid size={{ xs: 12, md: 7 }}>
           {/* Profile Section */}
           <Paper sx={{ mb: 3 }}>
             <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>

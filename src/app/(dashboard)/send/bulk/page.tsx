@@ -74,7 +74,7 @@ export default function BulkSMSPage() {
 
       <Grid container spacing={3}>
         {/* Form */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Paper sx={{ p: 3.5 }}>
             {error && <Alert severity="error" sx={{ mb: 2.5 }}>{error}</Alert>}
             {success && <Alert severity="success" sx={{ mb: 2.5 }}>{success}</Alert>}
@@ -82,7 +82,7 @@ export default function BulkSMSPage() {
             <form onSubmit={handleSubmit}>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="subtitle2" sx={{ mb: 1 }}>Sender ID</Typography>
                     <TextField select value={form.sender_id} onChange={e => setForm(p => ({ ...p, sender_id: e.target.value }))} disabled={fetching} required>
                       {fetching ? <MenuItem disabled>Loading…</MenuItem>
@@ -90,7 +90,7 @@ export default function BulkSMSPage() {
                         : senderIds.map(s => <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>)}
                     </TextField>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="subtitle2" sx={{ mb: 1 }}>Campaign Label</Typography>
                     <TextField
                       placeholder="e.g. April Promo"
@@ -148,7 +148,7 @@ export default function BulkSMSPage() {
                     value={form.content}
                     onChange={e => setForm(p => ({ ...p, content: e.target.value }))}
                     required
-                    inputProps={{ maxLength: MAX_CHARS }}
+                    slotProps={{ htmlInput: { maxLength: MAX_CHARS } }}
                   />
                 </Box>
 
@@ -171,7 +171,7 @@ export default function BulkSMSPage() {
         </Grid>
 
         {/* Summary */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Paper sx={{ p: 3, position: 'sticky', top: 76 }}>
             <Typography variant="h3" sx={{ fontSize: '0.9375rem', mb: 2.5 }}>Send Summary</Typography>
             {[

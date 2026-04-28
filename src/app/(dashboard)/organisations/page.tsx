@@ -129,7 +129,7 @@ export default function OrganisationsPage() {
       <Dialog open={!!rateDialog} onClose={() => setRateDialog(null)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ fontWeight: 600 }}>Set Rate — {rateDialog?.name}</DialogTitle>
         <DialogContent sx={{ pt: '16px !important' }}>
-          <TextField label="Rate (KES per unit)" type="number" inputProps={{ min: 0.01, step: 0.01 }} value={rate} onChange={e => setRate(e.target.value)} fullWidth />
+          <TextField label="Rate (KES per unit)" type="number" slotProps={{ htmlInput: { min: 0.01, step: 0.01 } }} value={rate} onChange={e => setRate(e.target.value)} fullWidth />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
           <Button variant="outlined" size="small" onClick={() => setRateDialog(null)}>Cancel</Button>

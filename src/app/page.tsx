@@ -96,7 +96,7 @@ export default function LandingPage() {
 
         <Grid container spacing={0}>
           {FEATURES.map((f, i) => (
-            <Grid item xs={12} sm={6} md={4} key={i}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
               <Box sx={{
                 p: 3.5,
                 borderTop: '1px solid #E2E8F0',

@@ -131,7 +131,7 @@ export default function SenderIDsPage() {
         <DialogTitle sx={{ fontWeight: 600 }}>Request Sender ID</DialogTitle>
         <DialogContent sx={{ pt: '16px !important', display: 'flex', flexDirection: 'column', gap: 2 }}>
           {error && <Alert severity="error">{error}</Alert>}
-          <TextField label="Sender name" placeholder="e.g. MYBRAND" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required helperText="Max 11 characters, alphanumeric" inputProps={{ maxLength: 11 }} />
+          <TextField label="Sender name" placeholder="e.g. MYBRAND" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required helperText="Max 11 characters, alphanumeric" slotProps={{ htmlInput: { maxLength: 11 } }} />
           <TextField label="Purpose / use case" multiline rows={3} placeholder="Describe how you'll use this sender name…" value={form.purpose} onChange={e => setForm(p => ({ ...p, purpose: e.target.value }))} required />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>

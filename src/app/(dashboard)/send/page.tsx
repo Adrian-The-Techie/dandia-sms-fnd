@@ -51,7 +51,7 @@ export default function SendSMSPage() {
 
       <Grid container spacing={3}>
         {/* Form */}
-        <Grid item xs={12} md={7}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Paper sx={{ p: 3.5 }}>
             {error && <Alert severity="error" sx={{ mb: 2.5 }}>{error}</Alert>}
             {success && <Alert severity="success" sx={{ mb: 2.5 }}>{success}</Alert>}
@@ -67,7 +67,7 @@ export default function SendSMSPage() {
                     onChange={e => setForm(p => ({ ...p, sender_id: e.target.value }))}
                     disabled={fetching}
                     required
-                    SelectProps={{ displayEmpty: true }}
+                    slotProps={{ select: { displayEmpty: true } }}
                   >
                     {fetching ? (
                       <MenuItem disabled>Loading…</MenuItem>
@@ -92,7 +92,7 @@ export default function SendSMSPage() {
                     value={form.recipient}
                     onChange={e => setForm(p => ({ ...p, recipient: e.target.value }))}
                     required
-                    inputProps={{ inputMode: 'tel' }}
+                    slotProps={{ htmlInput: { inputMode: 'tel' } }}
                   />
                 </Box>
 
@@ -111,7 +111,7 @@ export default function SendSMSPage() {
                     value={form.content}
                     onChange={e => setForm(p => ({ ...p, content: e.target.value }))}
                     required
-                    inputProps={{ maxLength: MAX_CHARS }}
+                    slotProps={{ htmlInput: { maxLength: MAX_CHARS } }}
                   />
                 </Box>
 
@@ -134,7 +134,7 @@ export default function SendSMSPage() {
         </Grid>
 
         {/* Preview */}
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <PhonePreview content={form.content} sender={senderName} />
         </Grid>
       </Grid>

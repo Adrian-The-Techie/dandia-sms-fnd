@@ -53,13 +53,15 @@ export default function HistoryPage() {
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
           sx={{ minWidth: 260 }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"><Search size={14} color="#94A3B8" /></InputAdornment>,
-            endAdornment: search ? (
-              <InputAdornment position="end">
-                <Button size="small" sx={{ minWidth: 'unset', p: 0, color: 'text.secondary' }} onClick={() => setSearch('')}><X size={14} /></Button>
-              </InputAdornment>
-            ) : null,
+          slotProps={{
+            input: {
+              startAdornment: <InputAdornment position="start"><Search size={14} color="#94A3B8" /></InputAdornment>,
+              endAdornment: search ? (
+                <InputAdornment position="end">
+                  <Button size="small" sx={{ minWidth: 'unset', p: 0, color: 'text.secondary' }} onClick={() => setSearch('')}><X size={14} /></Button>
+                </InputAdornment>
+              ) : null,
+            }
           }}
         />
         <FormControl size="small" sx={{ minWidth: 140 }}>
