@@ -5,7 +5,7 @@ export interface BulkSMSPayload { sender_id: string; label: string; content: str
 export interface SenderIDPayload { name: string; purpose: string; }
 
 export const smsService = {
-  analytics: () => api.get('/sms/analytics/'),
+  analytics: (params?: Record<string, any>) => api.get('/sms/analytics/', { params }),
 
   // Sender IDs
   senderIds: (params?: { status?: string }) => api.get('/sms/sender-ids/', { params }),

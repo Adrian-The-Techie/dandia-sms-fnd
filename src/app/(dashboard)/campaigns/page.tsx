@@ -43,7 +43,7 @@ export default function CampaignsPage() {
       const recipients = form.recipients.split(/[\n,;]+/).map(r => r.trim()).filter(Boolean);
       await campaignsService.create({ 
         ...form, 
-        sender_id: form.sender_id || null,
+        sender_id: form.sender_id || undefined,
         recipients, 
         scheduled_at: form.scheduled_at || null 
       });

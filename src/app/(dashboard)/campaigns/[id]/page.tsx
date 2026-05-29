@@ -87,7 +87,7 @@ export default function CampaignDetailPage() {
       const recipients = editForm.recipients.split(/[\n,;]+/).map(r => r.trim()).filter(Boolean);
       await campaignsService.update(campaignId, { 
         ...editForm, 
-        sender_id: editForm.sender_id || null,
+        sender_id: editForm.sender_id || undefined,
         recipients, 
         scheduled_at: editForm.scheduled_at || null 
       });
