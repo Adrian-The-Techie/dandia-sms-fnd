@@ -1,10 +1,10 @@
 import { Box, Typography, Button } from '@mui/material';
-import type { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 interface Props {
   title: string;
   subtitle?: string;
-  action?: { label: string; onClick: () => void; icon?: ReactNode };
+  action?: { label: string; onClick: () => void; icon?: ReactNode } | ReactNode;
 }
 
 export default function PageHeader({ title, subtitle, action }: Props) {
@@ -21,15 +21,18 @@ export default function PageHeader({ title, subtitle, action }: Props) {
         )}
       </Box>
       {action && (
-        <Button
-          variant="contained"
-          onClick={action.onClick}
-          startIcon={action.icon}
-          size="small"
-          sx={{ mt: 0.5, flexShrink: 0 }}
-        >
-          {action.label}
-        </Button>
+        <Box sx={{ mt: 0.5, flexShrink: 0, display: 'flex', gap: 1 }}>
+          {React.isValidElement(action) ? action : (
+            <Button
+              variant="contained"
+              onClick={(action as any).onClick}
+              startIcon={(action as any).icon}
+              size="small"
+            >
+              {(action as any).label}
+            </Button>
+          )}
+        </Box>
       )}
     </Box>
   );

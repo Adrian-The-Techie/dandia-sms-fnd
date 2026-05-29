@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import {
-  Box, Paper, Table, TableHead, TableRow, TableCell, TableBody,
+import { Box, Paper, Table, TableHead, TableRow, TableCell, TableBody,
   Button, Typography, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, MenuItem, Alert, CircularProgress,
   IconButton, Tooltip, Divider
 } from '@mui/material';
-import { Plus, Send, Trash2, RefreshCw } from 'lucide-react';
+import { Plus, Send, Trash2, RefreshCw, Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/ui/EmptyState';
@@ -24,21 +24,29 @@ export default function CampaignsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', sender_id: '', message_body: '', recipients: '', scheduled_at: '' });
+  const [dates, setDates] = useState({ start: '', end: '' });
+
+  const router = useRouter();
 
   const load = () => {
     setLoading(true);
     Promise.all([
-      campaignsService.list().then(r => setCampaigns(r.data.results ?? r.data)),
+      campaignsService.list({ start_date: dates.start, end_date: dates.end }).then(r => setCampaigns(r.data.results ?? r.data)),
       smsService.senderIds({ status: 'approved' }).then(r => setSenderIds(r.data.results ?? r.data)),
     ]).finally(() => setLoading(false));
   };
-  useEffect(load, []);
+  useEffect(load, [dates.start, dates.end]);
 
   const handleCreate = async () => {
     setActionLoading(true); setError('');
     try {
       const recipients = form.recipients.split(/[\n,;]+/).map(r => r.trim()).filter(Boolean);
-      await campaignsService.create({ ...form, recipients, scheduled_at: form.scheduled_at || null });
+      await campaignsService.create({ 
+        ...form, 
+        sender_id: form.sender_id || null,
+        recipients, 
+        scheduled_at: form.scheduled_at || null 
+      });
       setOpen(false);
       setForm({ name: '', sender_id: '', message_body: '', recipients: '', scheduled_at: '' });
       load();
@@ -72,7 +80,11 @@ export default function CampaignsPage() {
       />
 
       <Paper>
-        <Box sx={{ px: 3, py: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <Box sx={{ px: 3, py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <input type="date" value={dates.start} onChange={e => setDates(p => ({ ...p, start: e.target.value }))} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #c4c4c4', color: 'rgba(0, 0, 0, 0.87)', fontSize: '14px', fontFamily: 'inherit' }} />
+            <input type="date" value={dates.end} onChange={e => setDates(p => ({ ...p, end: e.target.value }))} style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #c4c4c4', color: 'rgba(0, 0, 0, 0.87)', fontSize: '14px', fontFamily: 'inherit' }} />
+          </Box>
           <Tooltip title="Refresh">
             <IconButton size="small" onClick={load} disabled={loading}><RefreshCw size={15} /></IconButton>
           </Tooltip>
@@ -99,7 +111,7 @@ export default function CampaignsPage() {
               <TableRow key={c.id}>
                 <TableCell sx={{ fontWeight: 500 }}>{c.name}</TableCell>
                 <TableCell><StatusBadge status={c.status} /></TableCell>
-                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{c.recipient_count ?? '—'}</TableCell>
+                <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>{c.total_recipients ?? '—'}</TableCell>
                 <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem' }}>
                   {c.scheduled_at ? new Date(c.scheduled_at).toLocaleString() : 'Immediate'}
                 </TableCell>
@@ -110,7 +122,16 @@ export default function CampaignsPage() {
                         Send
                       </Button>
                     )}
-                    <IconButton size="small" color="error" onClick={() => setConfirmDelete(c)}><Trash2 size={15} /></IconButton>
+                    <Tooltip title="View Campaign">
+                      <IconButton size="small" color="primary" onClick={() => router.push(`/campaigns/${c.id}`)}>
+                        <Eye size={15} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton size="small" color="error" onClick={() => setConfirmDelete(c)}>
+                        <Trash2 size={15} />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
                 </TableCell>
               </TableRow>

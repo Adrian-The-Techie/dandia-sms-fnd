@@ -4,7 +4,7 @@ import {
   Box, Paper, Table, TableHead, TableRow, TableCell, TableBody,
   Button, Typography, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, Alert, CircularProgress,
-  IconButton, Tooltip, Divider, Chip
+  IconButton, Tooltip, Divider, Chip, MenuItem
 } from '@mui/material';
 import { Plus, Check, X, IdCard, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -13,6 +13,7 @@ import StatusBadge from '@/components/ui/StatusBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { smsService } from '@/lib/services/sms';
+import { orgsService } from '@/lib/services/organisations';
 
 export default function SenderIDsPage() {
   const { isSuperAdmin } = useAuth();
@@ -26,11 +27,33 @@ export default function SenderIDsPage() {
   const [form, setForm] = useState({ name: '', purpose: '' });
   const [rejectReason, setRejectReason] = useState('');
 
+  const [assignDialog, setAssignDialog] = useState<any>(null);
+  const [selectedOrgs, setSelectedOrgs] = useState<string[]>([]);
+  const [orgs, setOrgs] = useState<any[]>([]);
+
   const load = () => {
     setLoading(true);
     smsService.senderIds().then(r => setSenderIds(r.data.results ?? r.data)).finally(() => setLoading(false));
   };
-  useEffect(load, []);
+  
+  useEffect(() => {
+    load();
+    if (isSuperAdmin) {
+      orgsService.list().then(r => setOrgs(r.data.results ?? r.data));
+    }
+  }, [isSuperAdmin]);
+
+  const handleAssign = async () => {
+    if (!assignDialog) return;
+    setActionLoading(true);
+    try {
+      await smsService.updateSenderId(assignDialog.id, { organisations: selectedOrgs });
+      setAssignDialog(null);
+      setSelectedOrgs([]);
+      load();
+    } catch {}
+    finally { setActionLoading(false); }
+  };
 
   const handleCreate = async () => {
     setActionLoading(true); setError('');
@@ -46,18 +69,7 @@ export default function SenderIDsPage() {
     }
   };
 
-  const handleApprove = async (id: string) => {
-    setActionLoading(true);
-    try { await smsService.approveSenderId(id); load(); } catch {}
-    finally { setActionLoading(false); setActionItem(null); }
-  };
 
-  const handleReject = async () => {
-    if (!rejectDialog) return;
-    setActionLoading(true);
-    try { await smsService.rejectSenderId(rejectDialog.id, rejectReason); load(); } catch {}
-    finally { setActionLoading(false); setRejectDialog(null); setRejectReason(''); }
-  };
 
   return (
     <Box>
@@ -96,7 +108,16 @@ export default function SenderIDsPage() {
                     <Box sx={{ width: 32, height: 32, bgcolor: '#F1F5F9', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <IdCard size={14} color="#64748B" />
                     </Box>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{s.name}</Typography>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{s.name}</Typography>
+                      {isSuperAdmin && (
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                          {s.organisation_names?.length > 0 ? s.organisation_names.join(', ') : 'Global (Unassigned)'}
+                        </Typography>
+                      )}
+                    </Box>
+                    {s.is_default && <Chip label="Default" size="small" color="primary" sx={{ height: 20, fontSize: '0.65rem' }} />}
+                    {!s.is_active && <Chip label="Inactive" size="small" color="error" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />}
                   </Box>
                 </TableCell>
                 <TableCell sx={{ color: 'text.secondary', fontSize: '0.8125rem', maxWidth: 240 }}>
@@ -108,16 +129,9 @@ export default function SenderIDsPage() {
                 </TableCell>
                 {isSuperAdmin && (
                   <TableCell align="right">
-                    {s.status === 'pending' && (
-                      <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'flex-end' }}>
-                        <Button size="small" variant="contained" color="success" startIcon={<Check size={13} />} onClick={() => handleApprove(s.id)} disabled={actionLoading}>
-                          Approve
-                        </Button>
-                        <Button size="small" variant="outlined" color="error" startIcon={<X size={13} />} onClick={() => { setRejectDialog(s); setRejectReason(''); }}>
-                          Reject
-                        </Button>
-                      </Box>
-                    )}
+                    <Button size="small" variant="outlined" onClick={() => { setAssignDialog(s); setSelectedOrgs(s.organisations || []); }}>
+                      Assign Orgs
+                    </Button>
                   </TableCell>
                 )}
               </TableRow>
@@ -142,16 +156,27 @@ export default function SenderIDsPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Reject dialog */}
-      <Dialog open={!!rejectDialog} onClose={() => setRejectDialog(null)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Reject "{rejectDialog?.name}"</DialogTitle>
+      {/* Assign Org dialog */}
+      <Dialog open={!!assignDialog} onClose={() => setAssignDialog(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Assign Organisations</DialogTitle>
         <DialogContent sx={{ pt: '16px !important' }}>
-          <TextField label="Reason for rejection" multiline rows={3} value={rejectReason} onChange={e => setRejectReason(e.target.value)} fullWidth />
+          <TextField
+            select
+            fullWidth
+            label="Organisations"
+            value={selectedOrgs}
+            onChange={(e) => setSelectedOrgs(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+            slotProps={{ select: { multiple: true } }}
+          >
+            {orgs.map(org => (
+              <MenuItem key={org.id} value={org.id}>{org.name}</MenuItem>
+            ))}
+          </TextField>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-          <Button variant="outlined" size="small" onClick={() => setRejectDialog(null)}>Cancel</Button>
-          <Button variant="contained" color="error" size="small" onClick={handleReject} disabled={actionLoading || !rejectReason}>
-            {actionLoading ? <CircularProgress size={14} color="inherit" /> : 'Reject'}
+          <Button variant="outlined" size="small" onClick={() => setAssignDialog(null)}>Cancel</Button>
+          <Button variant="contained" size="small" onClick={handleAssign} disabled={actionLoading}>
+            {actionLoading ? <CircularProgress size={14} color="inherit" /> : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>

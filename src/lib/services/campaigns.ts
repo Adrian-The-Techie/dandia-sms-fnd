@@ -9,7 +9,7 @@ export interface CampaignPayload {
 }
 
 export const campaignsService = {
-  list: (params?: { status?: string }) => api.get('/campaigns/', { params }),
+  list: (params?: Record<string, any>) => api.get('/campaigns/', { params }),
   get: (id: string) => api.get(`/campaigns/${id}/`),
   create: (data: CampaignPayload) => api.post('/campaigns/', data),
   update: (id: string, data: Partial<CampaignPayload>) => api.patch(`/campaigns/${id}/`, data),

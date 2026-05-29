@@ -6,6 +6,7 @@ export interface AcceptInvitePayload { token: string; password: string; first_na
 
 export const authService = {
   login: (data: LoginPayload) => api.post('/auth/login/', data),
+  register: (data: Record<string, any>) => api.post('/auth/register/', data),
   logout: (refresh: string) => api.post('/auth/logout/', { refresh }),
   me: () => api.get('/auth/me/'),
   updateMe: (data: Partial<{ first_name: string; last_name: string }>) => api.patch('/auth/me/', data),

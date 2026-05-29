@@ -6,7 +6,7 @@ import {
   DialogActions, TextField, MenuItem, Alert, CircularProgress,
   IconButton, Tooltip, Divider, Chip
 } from '@mui/material';
-import { Plus, RotateCcw, UserX, Users } from 'lucide-react';
+import { Plus, RotateCcw, UserX, Users, Edit2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import PageHeader from '@/components/ui/PageHeader';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -33,6 +33,25 @@ export default function UsersPage() {
   const [form, setForm] = useState<Omit<CreateUserPayload, 'organisation'> & { organisation: string }>({
     email: '', role: 'user', first_name: '', last_name: '', organisation: '',
   });
+
+  const [editDialog, setEditDialog] = useState<any>(null);
+  const [editForm, setEditForm] = useState<Omit<CreateUserPayload, 'organisation'> & { organisation: string }>({
+    email: '', role: 'user', first_name: '', last_name: '', organisation: '',
+  });
+
+  const handleEditSubmit = async () => {
+    if (!editDialog) return;
+    setActionLoading(true); setError('');
+    try {
+      const payload: Partial<CreateUserPayload> = { ...editForm };
+      if (!editForm.organisation) delete payload.organisation;
+      await usersService.update(editDialog.id, payload);
+      setEditDialog(null);
+      load();
+    } catch (err: any) {
+      setError(err.response?.data?.detail ?? 'Failed to update user.');
+    } finally { setActionLoading(false); }
+  };
 
   const load = () => {
     setLoading(true);
@@ -125,6 +144,20 @@ export default function UsersPage() {
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'flex-end' }}>
+                    <Tooltip title="Edit user">
+                      <IconButton size="small" onClick={() => { 
+                        setEditDialog(u); 
+                        setEditForm({ 
+                          first_name: u.first_name || '', 
+                          last_name: u.last_name || '', 
+                          email: u.email, 
+                          role: u.role, 
+                          organisation: u.organisation_id || '' 
+                        }); 
+                      }}>
+                        <Edit2 size={14} />
+                      </IconButton>
+                    </Tooltip>
                     {!u.invite_accepted && u.is_active && (
                       <Tooltip title="Resend invite">
                         <IconButton size="small" onClick={() => handleResend(u.id)}>
@@ -173,6 +206,36 @@ export default function UsersPage() {
           <Button variant="outlined" size="small" onClick={() => setOpen(false)}>Cancel</Button>
           <Button variant="contained" size="small" onClick={handleCreate} disabled={actionLoading || !form.email || !form.role}>
             {actionLoading ? <CircularProgress size={14} color="inherit" /> : 'Send Invite'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Edit User dialog */}
+      <Dialog open={!!editDialog} onClose={() => setEditDialog(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 600 }}>Edit User</DialogTitle>
+        <DialogContent sx={{ pt: '16px !important', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {error && <Alert severity="error" sx={{ fontSize: '0.8125rem' }}>{error}</Alert>}
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <TextField label="First name" value={editForm.first_name} onChange={e => setEditForm(p => ({ ...p, first_name: e.target.value }))} />
+            <TextField label="Last name" value={editForm.last_name} onChange={e => setEditForm(p => ({ ...p, last_name: e.target.value }))} />
+          </Box>
+          <TextField label="Email address" type="email" required value={editForm.email} onChange={e => setEditForm(p => ({ ...p, email: e.target.value }))} />
+          <TextField select label="Role" value={editForm.role} onChange={e => setEditForm(p => ({ ...p, role: e.target.value as any }))}>
+            <MenuItem value="user">User</MenuItem>
+            <MenuItem value="org_admin">Org Admin</MenuItem>
+            {isSuperAdmin && <MenuItem value="super_admin">Super Admin</MenuItem>}
+          </TextField>
+          {isSuperAdmin && (
+            <TextField select label="Organisation" value={editForm.organisation} onChange={e => setEditForm(p => ({ ...p, organisation: e.target.value }))}>
+              <MenuItem value="">— None —</MenuItem>
+              {orgs.map(o => <MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>)}
+            </TextField>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+          <Button variant="outlined" size="small" onClick={() => setEditDialog(null)}>Cancel</Button>
+          <Button variant="contained" size="small" onClick={handleEditSubmit} disabled={actionLoading || !editForm.email || !editForm.role}>
+            {actionLoading ? <CircularProgress size={14} color="inherit" /> : 'Save Changes'}
           </Button>
         </DialogActions>
       </Dialog>

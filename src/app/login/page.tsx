@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Box, TextField, Button, Typography, Alert, InputAdornment, IconButton, CircularProgress } from '@mui/material';
 import { Eye, EyeOff, Send } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -90,8 +91,11 @@ export default function LoginPage() {
           </form>
         </Box>
 
-        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 3, color: 'text.secondary' }}>
-          Access is invite-only. Contact your administrator to get started.
+        <Typography variant="body2" sx={{ display: 'block', textAlign: 'center', mt: 3, color: 'text.secondary' }}>
+          Don't have an account?{' '}
+          <Link href="/register" style={{ color: '#0A66C2', textDecoration: 'none', fontWeight: 600 }}>
+            Sign up
+          </Link>
         </Typography>
       </Box>
     </Box>

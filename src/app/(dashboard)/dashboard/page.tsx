@@ -11,16 +11,6 @@ import PageHeader from '@/components/ui/PageHeader';
 import StatCard from '@/components/ui/StatCard';
 import StatusBadge from '@/components/ui/StatusBadge';
 
-const MOCK_CHART = [
-  { day: 'Mon', sent: 3200, delivered: 3100 },
-  { day: 'Tue', sent: 4800, delivered: 4600 },
-  { day: 'Wed', sent: 2900, delivered: 2750 },
-  { day: 'Thu', sent: 6100, delivered: 5900 },
-  { day: 'Fri', sent: 5400, delivered: 5300 },
-  { day: 'Sat', sent: 1800, delivered: 1750 },
-  { day: 'Sun', sent: 2100, delivered: 2050 },
-];
-
 export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
@@ -28,13 +18,16 @@ export default function DashboardPage() {
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [dates, setDates] = useState({ start: '', end: '' });
+
   useEffect(() => {
+    setLoading(true);
     Promise.all([
-      smsService.analytics().then(r => setStats(r.data)).catch(() => { }),
+      smsService.analytics({ start_date: dates.start, end_date: dates.end }).then(r => setStats(r.data)).catch(() => { }),
       smsService.messages({ status: undefined }).then(r => setMessages((r.data.results ?? r.data).slice(0, 6))).catch(() => { }),
       billingService.balance().then(r => setBalance(r.data.unit_balance)).catch(() => { }),
     ]).finally(() => setLoading(false));
-  }, []);
+  }, [dates.start, dates.end]);
 
   const kpis = [
     { label: 'Total Messages', value: stats?.total_messages ?? 0, icon: <Send size={16} />, accent: 'blue' as const },
@@ -69,18 +62,29 @@ export default function DashboardPage() {
           <Paper sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h3" sx={{ fontSize: '0.9375rem' }}>Message Volume</Typography>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                {[['#0A66C2', 'Sent'], ['#2B9348', 'Delivered']].map(([c, l]) => (
-                  <Box key={l} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c }} />
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{l}</Typography>
-                  </Box>
-                ))}
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <input type="date" value={dates.start} onChange={e => setDates(p => ({ ...p, start: e.target.value }))} style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #E2E8F0', color: '#475569', fontSize: '13px' }} />
+                  <input type="date" value={dates.end} onChange={e => setDates(p => ({ ...p, end: e.target.value }))} style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #E2E8F0', color: '#475569', fontSize: '13px' }} />
+                </Box>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  {[['#0A66C2', 'Sent'], ['#2B9348', 'Delivered']].map(([c, l]) => (
+                    <Box key={l} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c }} />
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{l}</Typography>
+                    </Box>
+                  ))}
+                </Box>
               </Box>
             </Box>
             <Box sx={{ height: 220 }}>
+              {stats?.chart_data?.length === 0 ? (
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>No data for selected period</Typography>
+                </Box>
+              ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={MOCK_CHART} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <AreaChart data={stats?.chart_data ?? []} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gSent" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#0A66C2" stopOpacity={0.12} />
@@ -99,6 +103,7 @@ export default function DashboardPage() {
                   <Area type="monotone" dataKey="delivered" stroke="#2B9348" strokeWidth={2} fill="url(#gDel)" />
                 </AreaChart>
               </ResponsiveContainer>
+              )}
             </Box>
           </Paper>
         </Grid>

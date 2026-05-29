@@ -9,7 +9,7 @@ const api = axios.create({
   },
 });
 
-// Interceptor to add Auth header
+// Interceptor to add Auth header and handle FormData
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
@@ -17,6 +17,11 @@ api.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
+  
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  
   return config;
 });
 

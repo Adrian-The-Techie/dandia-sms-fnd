@@ -11,13 +11,11 @@ export const smsService = {
   senderIds: (params?: { status?: string }) => api.get('/sms/sender-ids/', { params }),
   getSenderId: (id: string) => api.get(`/sms/sender-ids/${id}/`),
   createSenderId: (data: SenderIDPayload) => api.post('/sms/sender-ids/', data),
-  deleteSenderId: (id: string) => api.delete(`/sms/sender-ids/${id}/`),
-  approveSenderId: (id: string) => api.post(`/sms/sender-ids/${id}/approve/`),
-  rejectSenderId: (id: string, reason: string) => api.post(`/sms/sender-ids/${id}/reject/`, { reason }),
+  updateSenderId: (id: string, data: any) => api.patch(`/sms/sender-ids/${id}/`, data),
 
   // Messages
   sendSingle: (data: SingleSMSPayload) => api.post('/sms/single/', data),
   sendBulk: (data: BulkSMSPayload) => api.post('/sms/bulk/', data),
-  messages: (params?: { status?: string }) => api.get('/sms/messages/', { params }),
+  messages: (params?: Record<string, any>) => api.get('/sms/messages/', { params }),
   bulkJobs: () => api.get('/sms/bulk-jobs/'),
 };

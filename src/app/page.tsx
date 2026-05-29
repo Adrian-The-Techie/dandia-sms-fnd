@@ -31,6 +31,9 @@ export default function LandingPage() {
               <Button component={Link} href="/login" variant="outlined" size="small" sx={{ px: 2 }}>
                 Sign in
               </Button>
+              <Button component={Link} href="/register" variant="contained" size="small" sx={{ px: 2 }}>
+                Sign up
+              </Button>
             </Box>
           </Box>
         </Container>
@@ -53,20 +56,20 @@ export default function LandingPage() {
             <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
               <Button
                 component={Link}
-                href="/login"
+                href="/register"
                 variant="contained"
                 endIcon={<ArrowRight size={16} />}
                 sx={{ px: 3, py: 1.125 }}
               >
-                Access Portal
+                Sign up for free
               </Button>
               <Button
-                component="a"
-                href="mailto:dandiaholdingsltd@gmail.com"
+                component={Link}
+                href="/login"
                 variant="outlined"
                 sx={{ px: 3, py: 1.125 }}
               >
-                Contact Sales
+                Access Portal
               </Button>
             </Box>
 

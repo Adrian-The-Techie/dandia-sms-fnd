@@ -13,6 +13,7 @@ import {
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const DRAWER_WIDTH = 240;
 
@@ -62,18 +63,30 @@ function NavItem({ label, icon: Icon, href, active }: { label: string; icon: any
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { user, logout, isSuperAdmin, isOrgAdmin } = useAuth();
+  const { user, isLoading, logout, isSuperAdmin, isOrgAdmin } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
-  useEffect(() => { if (!user) router.push('/login'); }, [user, router]);
+  useEffect(() => { 
+    if (!isLoading && !user) router.push('/login'); 
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   const adminItems = ADMIN_NAV.filter(n => {
-    if (n.roles.includes('super_admin') && !isSuperAdmin) return false;
-    if (n.roles.length === 2 && !isOrgAdmin) return false;
-    return true;
+    return n.roles.some(role => {
+      if (role === 'super_admin') return isSuperAdmin;
+      if (role === 'org_admin') return isOrgAdmin;
+      return false;
+    });
   });
 
   const initials = user
